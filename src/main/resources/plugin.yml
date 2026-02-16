@@ -1,0 +1,7 @@
+name: CardsDP
+version: 1.0.0
+main: com.dqc.cardsdp.CardsPlugin
+api-version: "1.21"
+description: Datapack-equivalent card table gameplay implemented as a Paper plugin.
+authors:
+  - dqc

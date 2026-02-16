@@ -1,0 +1,13 @@
+plugin:
+  enabled: "<green>[CardsDP] Enabled. Locale: <yellow><lang></yellow></green>"
+  disabled: "<yellow>[CardsDP] Disabled</yellow>"
+  datapack_loaded: "<green>[CardsDP] Datapack behavior mapped to Java runtime</green>"
+
+datapack:
+  missing_resource: "<yellow>Missing datapack resource: <red><path></red></yellow>"
+  parse_failed: "<red>Failed to parse datapack resource: <yellow><path></yellow>, reason: <gray><reason></gray></red>"
+
+gameplay:
+  slot_locked: "<red>This stack slot is currently locked</red>"
+  offhand_incompatible: "<red>Offhand must be a card/deck or empty</red>"
+  head_owner_missing: "<red>The player head has no readable owner name</red>"

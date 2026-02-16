@@ -1,0 +1,114 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"OpenBagTwo"}],"profile":{"id":[-1949347850,128666843,-1731162161,-296599145]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"ThePoyoPal"}],"profile":{"id":[-1928450967,-1332328235,-1183734857,-712176397]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"MrVildy"}],"profile":{"id":[-1371147089,2147307236,-1220740706,-1710763662]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Nonik_"}],"profile":{"id":[150860251,-525712935,-1806800406,612100199]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Golem64"}],"profile":{"id":[-2141623788,1939424259,-1919240656,-170438915]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"fwics"}],"profile":{"id":[183870116,-1694347774,-1819901373,-28125267]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Lniz"}],"profile":{"id":[-1458367880,1591627708,-1104005778,497142165]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"BlobGames"}],"profile":{"id":[-153598145,1124879543,-1882157860,1632244274]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"OnyxJS"}],"profile":{"id":[-1762695745,-816430152,-1778228894,-159459058]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Nehmne"}],"profile":{"id":[-4797618,2120567811,-1313533643,-105411431]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"GunsAndChips"}],"profile":{"id":[1587037855,-1704246295,-1521622538,-1808338150]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"bbb651"}],"profile":{"id":[-1780050332,1260997146,-1122975798,1121888872]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Pepe20129"}],"profile":{"id":[1442032295,617563768,-1535479267,-391015786]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"DysphoricPeach"}],"profile":{"id":[-1553101094,-1332130296,-2102239991,-74814739]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"davie53"}],"profile":{"id":[-1016258532,261047415,-1620968302,-1810114801]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Hexasann"}],"profile":{"id":[287733718,1987002615,-1447812052,-1223377178]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Veganwater45"}],"profile":{"id":[803529614,661801954,-1758014499,1581316268]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"FernandoDaniel"}],"profile":{"id":[709420466,1232228252,-1573189128,80714474]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Conure512"}],"profile":{"id":[-1995421155,-892910952,-1635154144,1299374968]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"puppywader"}],"profile":{"id":[-2035799383,-846970657,-1297447015,-2013804891]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Peril137"}],"profile":{"id":[60829098,-1657190215,-1079091562,-326358122]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"victhor003"}],"profile":{"id":[-1413495281,1844005811,-1670587773,1820210371]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"FakeZircon"}],"profile":{"id":[218140063,1373586956,-1980758690,797638775]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"GoldenRobot_II"}],"profile":{"id":[801024832,1091455991,-1552036623,-2032656072]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"LordFlame"}],"profile":{"id":[-1343888796,1316307806,-1618260946,146325468]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"oga449"}],"profile":{"id":[-1553933303,418860726,-1076889757,359117400]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"ped3strian"}],"profile":{"id":[-157445717,1706707971,-1587611943,659882944]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"bpendragon"}],"profile":{"id":[521515247,-410238689,-1483620191,-1287274420]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Zerahu"}],"profile":{"id":[865954444,1115770006,-1697447920,-681522977]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Ratman0813"}],"profile":{"id":[-875172067,272386462,-1095530086,-1189042046]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"G4B8O"}],"profile":{"id":[1264306939,1532840754,-1607291656,-548692320]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"LightWingUltra"}],"profile":{"id":[410556884,-1978384034,-2114745780,-167163929]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Queen_1405"}],"profile":{"id":[1784084139,-1415885694,-1860847558,2046700423]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"zeppelans"}],"profile":{"id":[1276570909,-1733017510,-2030636491,13663773]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"fuffypandauwu"}],"profile":{"id":[-1286456821,271664589,-2109737188,-23578617]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"StealthStalker"}],"profile":{"id":[831090410,-1450622681,-1754343708,293531452]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"machasins"}],"profile":{"id":[2075965329,1010845876,-1489188521,-1093954152]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"HAMMMY7"}],"profile":{"id":[-1207951099,-142259394,-1834590119,-543653491]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"AylaMao117"}],"profile":{"id":[-1059586774,96357170,-1181462878,1295734756]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"SlimyRedstone"}],"profile":{"id":[946839148,-544650210,-1784429720,411883435]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"RubberCrowy"}],"profile":{"id":[-1911034705,-1612691791,-1402756729,1409576996]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"lilypadSquared"}],"profile":{"id":[209389834,-1169537626,-2074498516,-372358337]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Jollto"}],"profile":{"id":[-1876957197,-1258602325,-2105852462,-1999087925]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"NotBoringName"}],"profile":{"id":[1360634140,1006518828,-1911250633,1134009277]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"_1024"}],"profile":{"id":[1667063235,-1178710949,-2072729803,-676349637]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Mister_Scheu"}],"profile":{"id":[-1298887456,1312181387,-1793120749,1572575486]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"TimeBender25"}],"profile":{"id":[1684753938,1868448463,-2086924868,-807679579]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Vertigofy"}],"profile":{"id":[993584706,-662093482,-1267724686,110782205]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Aicesnow"}],"profile":{"id":[1201507202,631523131,-1358003262,1803000089]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Caloob_"}],"profile":{"id":[-1292132711,489374503,-1091636820,1860573603]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Popa_42"}],"profile":{"id":[2113742622,-276086177,-1593841835,-1655232349]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Jeringlyst"}],"profile":{"id":[1434968682,-1722859493,-1435994502,-1810792541]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"ATOMICtheCrow"}],"profile":{"id":[-1990665141,1437288942,-1428766981,-2085100304]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"3njooo"}],"profile":{"id":[-1624320582,-755609752,-1464248459,-833220453]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Melancholy__"}],"profile":{"id":[-44904869,-581481517,-1689925687,-895990848]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Paniawesome"}],"profile":{"id":[-417495639,-564769637,-1736328242,464267210]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"100percentme"}],"profile":{"id":[-1435717636,-404600298,-1316816615,-967040901]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"UnableToFindUser"}],"profile":{"id":[-536788053,1205357284,-1822843198,-1835842181]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"LukeKr"}],"profile":{"id":[548325906,776881157,-2085141390,65894648]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"OrbBoi"}],"profile":{"id":[1469160810,123224568,-1924382721,1615015174]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"TheOneTheory"}],"profile":{"id":[-1935438031,874793022,-1900484581,1080562685]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"bronylike"}],"profile":{"id":[258706840,982862304,-1313493947,348398411]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Zeyro_p"}],"profile":{"id":[487029261,-1109963615,-1967203453,-189533042]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Flamesilk"}],"profile":{"id":[2052258385,96551162,-1574988975,1359418966]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Gezinski"}],"profile":{"id":[419969179,-1072672959,-1116421667,1740697841]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"ADAM_4644"}],"profile":{"id":[-1169672139,1571113729,-1832463738,-205207297]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"omerkb"}],"profile":{"id":[-786381800,53690623,-1780654228,-988993719]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Deaths_Shad0w"}],"profile":{"id":[177296785,-1549711446,-1947919576,-1488576557]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"FaultierLotus54"}],"profile":{"id":[-1549815202,843533389,-1326122397,-587642625]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"AddyTheNomad"}],"profile":{"id":[-1203045465,1307659895,-1917968541,417276354]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Golden_Wither"}],"profile":{"id":[-1106944050,849757981,-1648561329,-2120456523]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Y2Kun"}],"profile":{"id":[1467692061,-797817580,-1999778070,-543472366]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Simonomi"}],"profile":{"id":[1679568593,1621051533,-1758369910,882928352]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"DanielRH"}],"profile":{"id":[-1680172313,-558348554,-1748666135,-1511164567]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Joelydsac"}],"profile":{"id":[1577549744,-1767290194,-1299604979,1746733244]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Eikichirou"}],"profile":{"id":[602808045,363677139,-2102495404,-1899063864]}}}]},
+        {"type":"minecraft:item","name":"poisonous_potato","functions":[{"function":"minecraft:set_components","components":{"lore":[{"italic":false,"text":"Coalava"}],"profile":{"id":[-479176019,348537209,-1932332754,47187291]}}}]}
+      ],
+      "functions": [
+        {
+          "function": "minecraft:set_components",
+          "components": {
+            "!minecraft:food": {},
+            "!minecraft:consumable": {},
+            "minecraft:item_name": {
+              "text": "Playing Card"
+            },
+            "minecraft:enchantment_glint_override": false,
+            "minecraft:max_stack_size": 54,
+            "minecraft:custom_data": {
+              "dqc.cards":{
+                "is_card": true
+              }
+            },
+            "minecraft:item_model": "dqc.cards:card",
+            "minecraft:custom_model_data": {
+              "colors": [[0.4, 0, 0]],
+              "flags": [false],
+              "strings": ["joker", "Z"]
+            },
+            "minecraft:tooltip_display":{
+              "hidden_components":["minecraft:profile"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

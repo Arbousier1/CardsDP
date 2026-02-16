@@ -1,0 +1,1 @@
+execute as @e[tag=dqc.cards.table,type=interaction] at @s unless block ~ ~ ~ minecraft:end_portal_frame run function dqc.cards:table/cleanup

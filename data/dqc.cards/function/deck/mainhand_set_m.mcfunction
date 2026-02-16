@@ -1,0 +1,2 @@
+$item modify entity @s weapon.mainhand {"function":"set_components","components":{"minecraft:bundle_contents":$(deck),"minecraft:custom_model_data":{"colors":[$(color)]}}}
+$item modify entity @s weapon.mainhand {function:"set_damage",damage:$(count),add:false}

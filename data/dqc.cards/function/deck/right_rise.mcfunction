@@ -1,0 +1,2 @@
+execute if predicate {condition:entity_properties,entity:this,predicate:{type_specific:{type:player,input:{sneak:true,sprint:true}}}} run return run function dqc.cards:knuth/mainhand_shuffle
+execute if predicate {condition:entity_properties,entity:this,predicate:{type_specific:{type:player,input:{sneak:true,sprint:false}}}} run function dqc.cards:deck/mainhand_flip

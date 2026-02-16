@@ -1,0 +1,33 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "group": "dqc.cards:joker",
+  "pattern": [" P ", "RBC", " P "],
+  "key": {
+    "P": "minecraft:paper",
+    "R": "minecraft:red_dye",
+    "B": "minecraft:purple_dye",
+    "C": "minecraft:cyan_dye"
+  },
+  "result": {
+    "count": 4,
+    "id": "minecraft:poisonous_potato",
+    "components": {
+      "!minecraft:food": {},
+      "minecraft:custom_data": { "has_jokers": true },
+      "minecraft:item_model": "dqc.cards:joker",
+      "minecraft:item_name": { "text": "Joker Grab Bag" },
+      "minecraft:enchantment_glint_override": false,
+      "minecraft:tooltip_display": {
+        "hidden_components": ["minecraft:damage"]
+      },
+      "minecraft:consumable": {
+        "consume_seconds": 1,
+        "animation": "bow",
+        "has_consume_particles": false,
+        "sound": "minecraft:item.bundle.drop_contents"
+      },
+      "minecraft:custom_model_data":{"colors":[6694282]}
+    }
+  }
+}

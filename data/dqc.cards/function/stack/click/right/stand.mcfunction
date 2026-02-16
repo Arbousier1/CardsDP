@@ -1,0 +1,3 @@
+execute if items entity @s weapon.mainhand *[minecraft:custom_data~{dqc.cards:{is_card:true}}] run return run function dqc.cards:stack/click/right/stand/card
+execute if items entity @s weapon.mainhand *[minecraft:custom_data~{dqc.cards:{is_deck:true}}] run return run function dqc.cards:stack/click/right/stand/deck
+execute unless items entity @s weapon.mainhand * run return run function dqc.cards:stack/click/right/stand/empty

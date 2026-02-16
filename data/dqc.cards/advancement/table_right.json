@@ -1,0 +1,15 @@
+{
+  "criteria": {
+    "interact": {
+      "trigger": "minecraft:player_interacted_with_entity",
+      "conditions": {
+        "entity": {
+          "nbt": "{Tags:[\"dqc.cards.table\"]}"
+        }
+      }
+    }
+  },
+  "rewards": {
+    "function": "dqc.cards:advancement/table_right"
+  }
+}

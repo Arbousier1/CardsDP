@@ -1,0 +1,45 @@
+{
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:soul_campfire",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_data": { "dqc.cards": { "is_table": true } },
+                "minecraft:item_model": "dqc.cards:table",
+                "minecraft:item_name": { "text": "Card Table" },
+                "minecraft:block_state": {
+                  "lit": "false",
+                  "facing": "south"
+                },
+                "minecraft:container": [
+                  {
+                    "slot": 0,
+                    "item": {
+                      "count": 1,
+                      "id": "minecraft:stone",
+                      "components": {
+                        "minecraft:item_model": "dqc.cards:large_table",
+                        "minecraft:custom_model_data": {
+                          "colors": [1908001]
+                        }
+                      }
+                    }
+                  }
+                ],
+                "minecraft:tooltip_display": {
+                  "hidden_components": ["minecraft:container"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
