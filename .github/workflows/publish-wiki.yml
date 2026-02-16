@@ -32,14 +32,33 @@ jobs:
       - name: Sync docs/wiki to GitHub Wiki
         env:
           REPO: ${{ github.repository }}
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WIKI: ${{ secrets.WIKI }}
+          WIKI_TOKEN: ${{ secrets.WIKI_TOKEN }}
+          DEFAULT_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ACTOR: ${{ github.actor }}
           INPUT_MESSAGE: ${{ github.event.inputs.message }}
           SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
 
-          git clone "https://x-access-token:${TOKEN}@github.com/${REPO}.wiki.git" wiki
+          TOKEN=""
+          if [ -n "${WIKI}" ]; then
+            TOKEN="${WIKI}"
+          elif [ -n "${WIKI_TOKEN}" ]; then
+            TOKEN="${WIKI_TOKEN}"
+          else
+            TOKEN="${DEFAULT_TOKEN}"
+          fi
+
+          WIKI_URL="https://x-access-token:${TOKEN}@github.com/${REPO}.wiki.git"
+
+          if ! git ls-remote "${WIKI_URL}" >/dev/null 2>&1; then
+            echo "::error::Cannot access ${REPO}.wiki.git. Enable Wiki in repository settings, and set PAT in secret WIKI (or WIKI_TOKEN)."
+            echo "::error::For private repos use PAT scope: repo. For public repos use: public_repo."
+            exit 1
+          fi
+
+          git clone "${WIKI_URL}" wiki
           rsync -av --delete --exclude ".git/" docs/wiki/ wiki/
 
           if [ -z "$(git -C wiki status --porcelain)" ]; then

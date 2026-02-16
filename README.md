@@ -49,9 +49,20 @@ For full visuals (custom card/table models), you still need the matching resourc
 
 - GitHub Actions:
 - Open `Actions` -> `Publish Wiki` -> `Run workflow`
+- Recommended: add repository secret `WIKI` (PAT)
+- Compatible secret name: `WIKI_TOKEN`
+- PAT scope:
+- Private repository: `repo`
+- Public repository: `public_repo`
 
 - Local PowerShell:
 ```powershell
 $env:GITHUB_TOKEN = "ghp_xxx"
 .\scripts\publish-wiki.ps1 -Repo "owner/repo"
 ```
+
+If workflow logs show `repository ... .wiki.git not found`:
+
+1. Enable Wiki in GitHub repository settings.
+2. Create or verify `WIKI` secret (or `WIKI_TOKEN`).
+3. Re-run `Publish Wiki`.
