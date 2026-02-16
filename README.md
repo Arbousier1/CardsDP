@@ -39,3 +39,19 @@ i18n:
 
 Core gameplay works without a resource pack.
 For full visuals (custom card/table models), you still need the matching resource pack.
+
+## Wiki
+
+- Chinese wiki home: `docs/wiki/Home.md`
+- Legacy entry page: `docs/WIKI.zh-CN.md`
+
+## One-Click Wiki Publish
+
+- GitHub Actions:
+- Open `Actions` -> `Publish Wiki` -> `Run workflow`
+
+- Local PowerShell:
+```powershell
+$env:GITHUB_TOKEN = "ghp_xxx"
+.\scripts\publish-wiki.ps1 -Repo "owner/repo"
+```
