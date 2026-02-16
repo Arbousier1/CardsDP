@@ -44,23 +44,6 @@ For full visuals (custom card/table models), you still need the matching resourc
 
 - Chinese wiki home: `docs/wiki/Home.md`
 - Legacy entry page: `docs/WIKI.zh-CN.md`
-
-## One-Click Wiki Publish
-
-- GitHub Actions:
-- Open `Actions` -> `Publish Wiki` -> `Run workflow`
-- Recommended: add repository secret `WIKI` (PAT)
-- Compatible secret name: `WIKI_TOKEN`
-- PAT scope:
-- Private repository: `repo`
-- Public repository: `public_repo`
-
-- Local PowerShell:
-```powershell
-$env:GITHUB_TOKEN = "ghp_xxx"
-.\scripts\publish-wiki.ps1 -Repo "owner/repo"
-```
-
 If workflow logs show `repository ... .wiki.git not found`:
 
 1. Enable Wiki in GitHub repository settings.
