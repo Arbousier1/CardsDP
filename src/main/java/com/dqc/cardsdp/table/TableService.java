@@ -5,9 +5,12 @@ import com.dqc.cardsdp.i18n.I18nService;
 import com.dqc.cardsdp.item.CardsItemService;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -17,7 +20,6 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Display;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Interaction;
 import org.bukkit.entity.ItemDisplay;
 import org.bukkit.entity.Player;
@@ -35,21 +37,31 @@ public final class TableService {
     private final JavaPlugin plugin;
     private final CardsItemService itemService;
     private final I18nService i18n;
+    private final double cullDistanceSquared;
+    private final long cullIntervalTicks;
+    private final float displayViewRange;
 
     private final Map<UUID, TableState> tablesById = new HashMap<>();
-    private final Map<UUID, TableState> tableInteractionToState = new HashMap<>();
-    private final Map<UUID, StackState> stackInteractionToState = new HashMap<>();
+    private final Map<Integer, TableState> tableInteractionToState = new HashMap<>();
+    private final Map<Integer, StackState> stackInteractionToState = new HashMap<>();
     private final Map<BlockKey, UUID> tableByBlock = new HashMap<>();
+    private final Map<UUID, Set<UUID>> hiddenTablesByPlayer = new HashMap<>();
+    private final Set<Integer> trackedInteractionEntityIds = ConcurrentHashMap.newKeySet();
 
     public TableService(JavaPlugin plugin, CardsItemService itemService, I18nService i18n) {
         this.plugin = plugin;
         this.itemService = itemService;
         this.i18n = i18n;
+        double distance = Math.max(8.0D, plugin.getConfig().getDouble("performance.table_entity_cull_distance", 24.0D));
+        this.cullDistanceSquared = distance * distance;
+        this.cullIntervalTicks = Math.max(1L, plugin.getConfig().getLong("performance.visibility_update_ticks", 5L));
+        this.displayViewRange = (float) Math.max(0.15D, plugin.getConfig().getDouble("performance.display_view_range", 0.35D));
     }
 
     public void startMaintenanceTask() {
         ensurePrimaryThread("startMaintenanceTask");
         Bukkit.getScheduler().runTaskTimer(plugin, this::cleanupBrokenTables, 100L, 100L);
+        Bukkit.getScheduler().runTaskTimer(plugin, this::updateVisibilityForAllPlayers, cullIntervalTicks, cullIntervalTicks);
     }
 
     public boolean handleTablePlacement(BlockPlaceEvent event) {
@@ -67,21 +79,34 @@ public final class TableService {
         return state != null;
     }
 
-    public boolean isTableInteraction(Entity entity) {
-        return tableInteractionToState.containsKey(entity.getUniqueId());
+    public boolean isInteractionEntityId(int entityId) {
+        return trackedInteractionEntityIds.contains(entityId);
     }
 
-    public boolean isStackInteraction(Entity entity) {
-        return stackInteractionToState.containsKey(entity.getUniqueId());
-    }
-
-    public void handleTableRightClick(Player player, Interaction tableInteraction) {
-        ensurePrimaryThread("handleTableRightClick");
-        TableState table = tableInteractionToState.get(tableInteraction.getUniqueId());
-        if (table == null) {
+    public void handleInteractionPacket(Player player, int entityId, boolean attack) {
+        ensurePrimaryThread("handleInteractionPacket");
+        TableState table = tableInteractionToState.get(entityId);
+        if (table != null) {
+            if (attack) {
+                handleTableLeftClick(player, table);
+            } else {
+                handleTableRightClick(player, table);
+            }
             return;
         }
 
+        StackState stack = stackInteractionToState.get(entityId);
+        if (stack == null) {
+            return;
+        }
+        if (attack) {
+            handleStackLeftClick(player, stack);
+        } else {
+            handleStackRightClick(player, stack);
+        }
+    }
+
+    private void handleTableRightClick(Player player, TableState table) {
         int rotation = rotationFromYaw(player.getYaw());
         for (StackState stack : table.stacks) {
             if (stack.display.isValid()) {
@@ -90,13 +115,7 @@ public final class TableService {
         }
     }
 
-    public void handleTableLeftClick(Player player, Interaction tableInteraction) {
-        ensurePrimaryThread("handleTableLeftClick");
-        TableState table = tableInteractionToState.get(tableInteraction.getUniqueId());
-        if (table == null) {
-            return;
-        }
-
+    private void handleTableLeftClick(Player player, TableState table) {
         table.health -= 1;
         if (table.health <= 0) {
             destroyTable(table.id, player.getGameMode() != GameMode.CREATIVE);
@@ -118,13 +137,7 @@ public final class TableService {
         }
     }
 
-    public void handleStackRightClick(Player player, Interaction stackInteraction) {
-        ensurePrimaryThread("handleStackRightClick");
-        StackState stack = stackInteractionToState.get(stackInteraction.getUniqueId());
-        if (stack == null) {
-            return;
-        }
-
+    private void handleStackRightClick(Player player, StackState stack) {
         ItemStack main = player.getInventory().getItemInMainHand();
         HeldItem held = classify(main);
         boolean sneak = player.isSneaking();
@@ -150,13 +163,7 @@ public final class TableService {
         }
     }
 
-    public void handleStackLeftClick(Player player, Interaction stackInteraction) {
-        ensurePrimaryThread("handleStackLeftClick");
-        StackState stack = stackInteractionToState.get(stackInteraction.getUniqueId());
-        if (stack == null) {
-            return;
-        }
-
+    private void handleStackLeftClick(Player player, StackState stack) {
         ItemStack main = player.getInventory().getItemInMainHand();
         HeldItem held = classify(main);
         boolean sneak = player.isSneaking();
@@ -187,6 +194,8 @@ public final class TableService {
         for (UUID tableId : ids) {
             destroyTable(tableId, false);
         }
+        hiddenTablesByPlayer.clear();
+        trackedInteractionEntityIds.clear();
     }
 
     private TableState spawnTable(Block block, float playerYaw, int tableColor) {
@@ -210,6 +219,7 @@ public final class TableService {
             entity -> {
                 entity.setBillboard(Display.Billboard.FIXED);
                 entity.setInvulnerable(true);
+                entity.setViewRange(displayViewRange);
                 entity.setItemStack(createLargeTableDisplay(tableColor));
             }
         );
@@ -224,6 +234,7 @@ public final class TableService {
                     entity -> {
                         entity.setBillboard(Display.Billboard.FIXED);
                         entity.setInvulnerable(true);
+                        entity.setViewRange(displayViewRange);
                         entity.setTransformation(createStackTransformation(rotation, 0.3F));
                         entity.setItemStack(itemService.createEmptySlotItem(false));
                     }
@@ -243,13 +254,16 @@ public final class TableService {
 
                 StackState stackState = new StackState(stackInteraction, stackDisplay);
                 table.stacks.add(stackState);
-                stackInteractionToState.put(stackInteraction.getUniqueId(), stackState);
+                stackInteractionToState.put(stackInteraction.getEntityId(), stackState);
+                trackedInteractionEntityIds.add(stackInteraction.getEntityId());
             }
         }
 
         tablesById.put(tableId, table);
-        tableInteractionToState.put(tableInteraction.getUniqueId(), table);
+        tableInteractionToState.put(tableInteraction.getEntityId(), table);
+        trackedInteractionEntityIds.add(tableInteraction.getEntityId());
         tableByBlock.put(BlockKey.from(block), tableId);
+        updateVisibilityForTable(table);
         return table;
     }
 
@@ -599,7 +613,8 @@ public final class TableService {
         }
 
         for (StackState stack : table.stacks) {
-            stackInteractionToState.remove(stack.interaction.getUniqueId());
+            stackInteractionToState.remove(stack.interaction.getEntityId());
+            trackedInteractionEntityIds.remove(stack.interaction.getEntityId());
             if (!stack.cards.isEmpty()) {
                 List<ItemStack> deckCards = new ArrayList<>();
                 for (ItemStack card : stack.cards) {
@@ -614,10 +629,12 @@ public final class TableService {
             stack.interaction.remove();
         }
 
-        tableInteractionToState.remove(table.interaction.getUniqueId());
+        tableInteractionToState.remove(table.interaction.getEntityId());
+        trackedInteractionEntityIds.remove(table.interaction.getEntityId());
         table.display.remove();
         table.interaction.remove();
         tableByBlock.remove(BlockKey.from(table.block));
+        clearHiddenTableState(table.id);
 
         if (table.block.getType() == Material.END_PORTAL_FRAME) {
             table.block.setType(Material.AIR, false);
@@ -641,6 +658,103 @@ public final class TableService {
         }
         for (UUID tableId : toDestroy) {
             destroyTable(tableId, false);
+        }
+    }
+
+    private void updateVisibilityForAllPlayers() {
+        ensurePrimaryThread("updateVisibilityForAllPlayers");
+        if (tablesById.isEmpty()) {
+            hiddenTablesByPlayer.clear();
+            return;
+        }
+
+        Set<UUID> online = new HashSet<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            online.add(player.getUniqueId());
+            Set<UUID> hidden = hiddenTablesByPlayer.computeIfAbsent(player.getUniqueId(), ignored -> new HashSet<>());
+            for (TableState table : tablesById.values()) {
+                boolean shouldHide = shouldHideFor(player, table);
+                if (shouldHide) {
+                    if (hidden.add(table.id)) {
+                        hideTable(player, table);
+                    }
+                    continue;
+                }
+                if (hidden.remove(table.id)) {
+                    showTable(player, table);
+                }
+            }
+        }
+
+        hiddenTablesByPlayer.keySet().removeIf(playerId -> !online.contains(playerId));
+    }
+
+    private void updateVisibilityForTable(TableState table) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            Set<UUID> hidden = hiddenTablesByPlayer.computeIfAbsent(player.getUniqueId(), ignored -> new HashSet<>());
+            if (shouldHideFor(player, table)) {
+                hidden.add(table.id);
+                hideTable(player, table);
+                continue;
+            }
+            hidden.remove(table.id);
+            showTable(player, table);
+        }
+    }
+
+    private boolean shouldHideFor(Player player, TableState table) {
+        if (!player.isOnline()) {
+            return true;
+        }
+        if (!player.getWorld().getUID().equals(table.block.getWorld().getUID())) {
+            return true;
+        }
+        double centerX = table.block.getX() + 0.5D;
+        double centerY = table.block.getY() + 0.5D;
+        double centerZ = table.block.getZ() + 0.5D;
+        double dx = player.getLocation().getX() - centerX;
+        double dy = player.getLocation().getY() - centerY;
+        double dz = player.getLocation().getZ() - centerZ;
+        return (dx * dx) + (dy * dy) + (dz * dz) > cullDistanceSquared;
+    }
+
+    private void hideTable(Player player, TableState table) {
+        if (table.interaction.isValid()) {
+            player.hideEntity(plugin, table.interaction);
+        }
+        if (table.display.isValid()) {
+            player.hideEntity(plugin, table.display);
+        }
+        for (StackState stack : table.stacks) {
+            if (stack.interaction.isValid()) {
+                player.hideEntity(plugin, stack.interaction);
+            }
+            if (stack.display.isValid()) {
+                player.hideEntity(plugin, stack.display);
+            }
+        }
+    }
+
+    private void showTable(Player player, TableState table) {
+        if (table.interaction.isValid()) {
+            player.showEntity(plugin, table.interaction);
+        }
+        if (table.display.isValid()) {
+            player.showEntity(plugin, table.display);
+        }
+        for (StackState stack : table.stacks) {
+            if (stack.interaction.isValid()) {
+                player.showEntity(plugin, stack.interaction);
+            }
+            if (stack.display.isValid()) {
+                player.showEntity(plugin, stack.display);
+            }
+        }
+    }
+
+    private void clearHiddenTableState(UUID tableId) {
+        for (Set<UUID> hidden : hiddenTablesByPlayer.values()) {
+            hidden.remove(tableId);
         }
     }
 

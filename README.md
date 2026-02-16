@@ -14,6 +14,7 @@ It no longer loads gameplay data from Minecraft datapack files at runtime.
 
 - Java 21+
 - Paper `1.21.11-R0.1-SNAPSHOT` (or compatible 1.21.x API)
+- PacketEvents `2.11.2` plugin
 
 ## Build
 
@@ -33,6 +34,11 @@ Jar output:
 i18n:
   locale: zh_cn
   fallback: en_us
+
+performance:
+  table_entity_cull_distance: 24.0
+  visibility_update_ticks: 5
+  display_view_range: 0.35
 ```
 
 ## Resource pack note

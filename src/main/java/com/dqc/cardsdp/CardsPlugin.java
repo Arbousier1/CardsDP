@@ -7,7 +7,9 @@ import com.dqc.cardsdp.item.CardsItemService;
 import com.dqc.cardsdp.listener.DeckListener;
 import com.dqc.cardsdp.listener.JokerListener;
 import com.dqc.cardsdp.listener.TableListener;
+import com.dqc.cardsdp.listener.TablePacketListener;
 import com.dqc.cardsdp.table.TableService;
+import com.github.retrooper.packetevents.PacketEvents;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -15,6 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class CardsPlugin extends JavaPlugin {
     private I18nService i18n;
     private TableService tableService;
+    private TablePacketListener tablePacketListener;
 
     @Override
     public void onEnable() {
@@ -31,6 +34,8 @@ public final class CardsPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new TableListener(tableService), this);
         Bukkit.getPluginManager().registerEvents(new DeckListener(this, itemService), this);
         Bukkit.getPluginManager().registerEvents(new JokerListener(itemService), this);
+        this.tablePacketListener = new TablePacketListener(this, tableService);
+        PacketEvents.getAPI().getEventManager().registerListener(tablePacketListener);
 
         i18n.info(getLogger(), "plugin.enabled", Placeholder.unparsed("lang", i18n.locale()));
         i18n.info(getLogger(), "plugin.logic_loaded");
@@ -44,6 +49,10 @@ public final class CardsPlugin extends JavaPlugin {
         if (tableService != null) {
             tableService.shutdown();
             tableService = null;
+        }
+        if (tablePacketListener != null && PacketEvents.getAPI() != null) {
+            PacketEvents.getAPI().getEventManager().unregisterListener(tablePacketListener);
+            tablePacketListener = null;
         }
     }
 }
