@@ -1,1 +1,0 @@
-execute unless items entity @p[tag=dqc.cards.active_player] weapon.offhand * run data modify entity @s item.components."minecraft:custom_model_data".flags[0] set value true

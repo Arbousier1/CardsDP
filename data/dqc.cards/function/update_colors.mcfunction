@@ -1,2 +1,0 @@
-execute as @p if predicate {condition:all_of,terms:[{condition:entity_properties,entity:this,predicate:{periodic_tick:10}},{condition:inverted,term:{condition:entity_properties,entity:this,predicate:{periodic_tick:20}}}]}
-execute as @p if predicate {condition:entity_properties,entity:this,predicate:{periodic_tick:20}}

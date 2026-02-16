@@ -1,7 +1,7 @@
 package com.dqc.cardsdp;
 
-import com.dqc.cardsdp.datapack.DatapackDefinitions;
-import com.dqc.cardsdp.datapack.DatapackLoader;
+import com.dqc.cardsdp.definitions.BuiltinDefinitions;
+import com.dqc.cardsdp.definitions.CardsDefinitions;
 import com.dqc.cardsdp.i18n.I18nService;
 import com.dqc.cardsdp.item.CardsItemService;
 import com.dqc.cardsdp.listener.DeckListener;
@@ -21,7 +21,7 @@ public final class CardsPlugin extends JavaPlugin {
         saveDefaultConfig();
         this.i18n = new I18nService(this);
 
-        DatapackDefinitions definitions = new DatapackLoader(getLogger(), i18n).load(getClassLoader());
+        CardsDefinitions definitions = BuiltinDefinitions.create();
         CardsItemService itemService = new CardsItemService(this, definitions);
         this.tableService = new TableService(this, itemService, i18n);
 
@@ -33,7 +33,7 @@ public final class CardsPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new JokerListener(itemService), this);
 
         i18n.info(getLogger(), "plugin.enabled", Placeholder.unparsed("lang", i18n.locale()));
-        i18n.info(getLogger(), "plugin.datapack_loaded");
+        i18n.info(getLogger(), "plugin.logic_loaded");
     }
 
     @Override

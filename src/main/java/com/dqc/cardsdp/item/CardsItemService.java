@@ -1,17 +1,20 @@
 package com.dqc.cardsdp.item;
 
-import com.dqc.cardsdp.datapack.CardColor;
-import com.dqc.cardsdp.datapack.CardDefinition;
-import com.dqc.cardsdp.datapack.DatapackDefinitions;
-import java.lang.reflect.Method;
+import com.dqc.cardsdp.definitions.CardColor;
+import com.dqc.cardsdp.definitions.CardDefinition;
+import com.dqc.cardsdp.definitions.CardsDefinitions;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Tag;
@@ -28,9 +31,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class CardsItemService {
     private static final byte TRUE = 1;
     private static final byte FALSE = 0;
+    private static final Color RED_CARD_TONE = Color.fromRGB(102, 0, 0);
+    private static final Color BLACK_CARD_TONE = Color.fromRGB(26, 77, 77);
 
     private final JavaPlugin plugin;
-    private final DatapackDefinitions definitions;
+    private final CardsDefinitions definitions;
 
     private final NamespacedKey keyIsCard;
     private final NamespacedKey keyIsDeck;
@@ -47,7 +52,7 @@ public final class CardsItemService {
     private final Map<String, ItemStack> tablePrototypeByColor = new ConcurrentHashMap<>();
     private final Map<String, ItemStack> jokerPrototypeByColor = new ConcurrentHashMap<>();
 
-    public CardsItemService(JavaPlugin plugin, DatapackDefinitions definitions) {
+    public CardsItemService(JavaPlugin plugin, CardsDefinitions definitions) {
         this.plugin = plugin;
         this.definitions = definitions;
         this.keyIsCard = key("is_card");
@@ -75,7 +80,10 @@ public final class CardsItemService {
         ItemStack card = new ItemStack(Material.POISONOUS_POTATO);
         ItemMeta meta = Objects.requireNonNull(card.getItemMeta());
         setItemName(meta, "Playing Card");
-        setModelValue(meta, definition.deckColor());
+        meta.setMaxStackSize(54);
+        meta.setEnchantmentGlintOverride(Boolean.FALSE);
+        setCardModel(meta, definition.redTone(), definition.deckColor(), faceDown, definition.suit(), definition.rank());
+        setCardOwnerLore(meta, definition.ownerName());
         applyItemModel(meta, "dqc.cards:card");
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(keyIsCard, PersistentDataType.BYTE, TRUE);
@@ -89,6 +97,7 @@ public final class CardsItemService {
             pdc.remove(keyCardOwner);
         }
         card.setItemMeta(meta);
+        stripCardConsumable(card);
         return card;
     }
 
@@ -106,15 +115,16 @@ public final class CardsItemService {
         ItemStack deck = new ItemStack(Material.GOAT_HORN);
         ItemMeta meta = Objects.requireNonNull(deck.getItemMeta());
         setItemName(meta, "Deck of Cards");
-        setModelValue(meta, deckColor);
+        meta.setMaxStackSize(1);
+        setSingleColorModel(meta, deckColor);
         applyItemModel(meta, "dqc.cards:deck");
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(keyIsDeck, PersistentDataType.BYTE, TRUE);
         pdc.set(keyColor, PersistentDataType.INTEGER, deckColor);
         pdc.set(keyDeckCards, PersistentDataType.BYTE_ARRAY, ItemListCodec.encode(new ArrayList<>(cards)));
         if (meta instanceof Damageable damageable) {
-            int size = Math.min(cards.size(), 54);
-            damageable.setDamage(Math.max(0, 54 - size));
+            damageable.setMaxDamage(55);
+            damageable.setDamage(resolveDeckDamage(cards.size()));
         }
         deck.setItemMeta(meta);
         return deck;
@@ -129,7 +139,7 @@ public final class CardsItemService {
         ItemStack table = new ItemStack(Material.SOUL_CAMPFIRE);
         ItemMeta meta = Objects.requireNonNull(table.getItemMeta());
         setItemName(meta, "Card Table");
-        setModelValue(meta, color);
+        setSingleColorModel(meta, color);
         applyItemModel(meta, "dqc.cards:table");
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(keyIsTable, PersistentDataType.BYTE, TRUE);
@@ -148,7 +158,7 @@ public final class CardsItemService {
         ItemStack empty = new ItemStack(Material.PAPER);
         ItemMeta meta = Objects.requireNonNull(empty.getItemMeta());
         setItemName(meta, "Card Slot");
-        setModelValue(meta, locked ? 1 : 0);
+        setSlotModel(meta, locked);
         applyItemModel(meta, "dqc.cards:empty_slot");
         meta.getPersistentDataContainer().set(keySlotLocked, PersistentDataType.BYTE, locked ? TRUE : FALSE);
         empty.setItemMeta(meta);
@@ -191,6 +201,9 @@ public final class CardsItemService {
         if (meta == null) {
             return;
         }
+        CustomModelDataComponent component = meta.getCustomModelDataComponent();
+        component.setFlags(List.of(faceDown));
+        meta.setCustomModelDataComponent(component);
         meta.getPersistentDataContainer().set(keyFaceDown, PersistentDataType.BYTE, faceDown ? TRUE : FALSE);
         card.setItemMeta(meta);
     }
@@ -220,6 +233,7 @@ public final class CardsItemService {
         } else {
             pdc.set(keyCardOwner, PersistentDataType.STRING, owner);
         }
+        setCardOwnerLore(meta, owner);
         card.setItemMeta(meta);
     }
 
@@ -258,13 +272,13 @@ public final class CardsItemService {
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(keyDeckCards, PersistentDataType.BYTE_ARRAY, ItemListCodec.encode(cards));
         if (meta instanceof Damageable damageable) {
-            int size = Math.min(cards.size(), 54);
-            damageable.setDamage(Math.max(0, 54 - size));
+            damageable.setMaxDamage(55);
+            damageable.setDamage(resolveDeckDamage(cards.size()));
         }
         deck.setItemMeta(meta);
     }
 
-    public DatapackDefinitions definitions() {
+    public CardsDefinitions definitions() {
         return definitions;
     }
 
@@ -316,14 +330,9 @@ public final class CardsItemService {
     }
 
     private void applyItemModel(ItemMeta meta, String modelPath) {
-        try {
-            Method method = meta.getClass().getMethod("setItemModel", NamespacedKey.class);
-            NamespacedKey model = NamespacedKey.fromString(modelPath.toLowerCase(Locale.ROOT));
-            if (model != null) {
-                method.invoke(meta, model);
-            }
-        } catch (Exception ignored) {
-            // Older APIs do not expose item model directly; PDC still preserves logic.
+        NamespacedKey model = NamespacedKey.fromString(modelPath);
+        if (model != null) {
+            meta.setItemModel(model);
         }
     }
 
@@ -331,10 +340,47 @@ public final class CardsItemService {
         meta.itemName(Component.text(name));
     }
 
-    private void setModelValue(ItemMeta meta, int value) {
+    private void setSingleColorModel(ItemMeta meta, int rgb) {
         CustomModelDataComponent component = meta.getCustomModelDataComponent();
-        component.setFloats(List.of((float) value));
+        component.setColors(List.of(rgbColor(rgb)));
+        component.setFlags(List.of());
+        component.setStrings(List.of());
+        component.setFloats(List.of());
         meta.setCustomModelDataComponent(component);
+    }
+
+    private void setSlotModel(ItemMeta meta, boolean locked) {
+        CustomModelDataComponent component = meta.getCustomModelDataComponent();
+        component.setFlags(List.of(locked));
+        component.setColors(List.of());
+        component.setStrings(List.of());
+        component.setFloats(List.of());
+        meta.setCustomModelDataComponent(component);
+    }
+
+    private void setCardModel(ItemMeta meta, boolean redTone, int deckColor, boolean faceDown, String suit, String rank) {
+        CustomModelDataComponent component = meta.getCustomModelDataComponent();
+        component.setColors(List.of(redTone ? RED_CARD_TONE : BLACK_CARD_TONE, rgbColor(deckColor)));
+        component.setFlags(List.of(faceDown));
+        component.setStrings(List.of(suit, rank));
+        component.setFloats(List.of());
+        meta.setCustomModelDataComponent(component);
+    }
+
+    private void setCardOwnerLore(ItemMeta meta, String owner) {
+        if (owner == null || owner.isBlank()) {
+            meta.lore(null);
+            return;
+        }
+        meta.lore(List.of(Component.text(owner)));
+    }
+
+    private int resolveDeckDamage(int cards) {
+        return Math.max(0, Math.min(cards, 54));
+    }
+
+    private Color rgbColor(int rgb) {
+        return Color.fromRGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
     }
 
     private ItemStack buildDeckPrototype(String colorId) {
@@ -355,13 +401,28 @@ public final class CardsItemService {
         ItemStack bag = new ItemStack(Material.POISONOUS_POTATO);
         ItemMeta meta = Objects.requireNonNull(bag.getItemMeta());
         setItemName(meta, "Joker Grab Bag");
-        setModelValue(meta, color);
+        meta.setEnchantmentGlintOverride(Boolean.FALSE);
+        setSingleColorModel(meta, color);
         applyItemModel(meta, "dqc.cards:joker");
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(keyHasJokers, PersistentDataType.BYTE, TRUE);
         pdc.set(keyColor, PersistentDataType.INTEGER, color);
         bag.setItemMeta(meta);
+        bag.unsetData(DataComponentTypes.FOOD);
+        bag.setData(
+            DataComponentTypes.CONSUMABLE,
+            Consumable.consumable()
+                .consumeSeconds(1.0F)
+                .animation(ItemUseAnimation.BOW)
+                .hasConsumeParticles(false)
+                .sound(Key.key("minecraft:item.bundle.drop_contents"))
+        );
         return bag;
+    }
+
+    private void stripCardConsumable(ItemStack card) {
+        card.unsetData(DataComponentTypes.FOOD);
+        card.unsetData(DataComponentTypes.CONSUMABLE);
     }
 
     private NamespacedKey key(String value) {

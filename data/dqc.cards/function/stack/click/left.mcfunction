@@ -1,2 +1,0 @@
-execute if predicate {condition:"minecraft:entity_properties",entity:"this",predicate:{type_specific:{type:"minecraft:player",input:{sneak:1b}}}} run return run function dqc.cards:stack/click/left/sneak
-function dqc.cards:stack/click/left/stand

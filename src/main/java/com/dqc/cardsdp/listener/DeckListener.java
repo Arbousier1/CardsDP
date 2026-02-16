@@ -37,10 +37,10 @@ public final class DeckListener implements Listener {
             return;
         }
 
+        event.setCancelled(true);
         if (!event.getPlayer().isSneaking()) {
             return;
         }
-        event.setCancelled(true);
 
         List<ItemStack> cards = itemService.getDeckCards(main);
         if (cards.isEmpty()) {

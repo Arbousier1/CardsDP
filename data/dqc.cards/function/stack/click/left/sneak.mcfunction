@@ -1,3 +1,0 @@
-execute if items entity @s weapon.mainhand *[minecraft:custom_data~{dqc.cards:{is_card:true}}] run return run function dqc.cards:stack/click/left/sneak/card
-execute if items entity @s weapon.mainhand *[minecraft:custom_data~{dqc.cards:{is_deck:true}}] run return run function dqc.cards:stack/click/left/sneak/deck
-execute unless items entity @s weapon.mainhand * run return run function dqc.cards:stack/click/left/sneak/empty

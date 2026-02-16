@@ -11,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 public final class JokerListener implements Listener {
     private final CardsItemService itemService;
@@ -37,16 +38,16 @@ public final class JokerListener implements Listener {
         String redOwner = randomOwner(itemService.definitions().redJokerOwners(), "joker_red");
         String blueOwner = randomOwner(itemService.definitions().blueJokerOwners(), "joker_blue");
 
-        spawnJoker(player, itemService.createJokerCard(true, deckColor, redOwner), 0.25);
-        spawnJoker(player, itemService.createJokerCard(false, deckColor, blueOwner), -0.25);
+        spawnJoker(player, itemService.createJokerCard(true, deckColor, redOwner));
+        spawnJoker(player, itemService.createJokerCard(false, deckColor, blueOwner));
     }
 
-    private void spawnJoker(Player player, ItemStack card, double sideways) {
+    private void spawnJoker(Player player, ItemStack card) {
         Location eye = player.getEyeLocation().clone();
         Location drop = eye.add(player.getLocation().getDirection().normalize().multiply(0.25));
         Item item = player.getWorld().dropItem(drop, card);
         item.setPickupDelay(0);
-        item.setVelocity(player.getLocation().getDirection().normalize().multiply(0.15).setY(0.06 + sideways * 0.02));
+        item.setVelocity(new Vector(0, 0, 0));
     }
 
     private void removeOneJokerBag(Player player, ItemStack consumed) {

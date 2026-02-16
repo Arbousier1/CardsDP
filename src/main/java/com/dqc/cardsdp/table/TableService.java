@@ -10,8 +10,10 @@ import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
@@ -258,12 +260,23 @@ public final class TableService {
         ItemStack display = new ItemStack(Material.DARK_OAK_PLANKS);
         ItemMeta meta = display.getItemMeta();
         if (meta != null) {
+            NamespacedKey model = NamespacedKey.fromString("dqc.cards:large_table");
+            if (model != null) {
+                meta.setItemModel(model);
+            }
             CustomModelDataComponent component = meta.getCustomModelDataComponent();
-            component.setFloats(List.of((float) color));
+            component.setColors(List.of(rgbColor(color)));
+            component.setFlags(List.of());
+            component.setStrings(List.of());
+            component.setFloats(List.of());
             meta.setCustomModelDataComponent(component);
             display.setItemMeta(meta);
         }
         return display;
+    }
+
+    private Color rgbColor(int rgb) {
+        return Color.fromRGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
     }
 
     private void placeSingleCard(Player player, StackState stack, boolean faceDown) {

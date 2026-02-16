@@ -1,1 +1,0 @@
-# scoreboard players set @s dqc.cards.use_held 0

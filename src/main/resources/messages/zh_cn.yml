@@ -1,11 +1,7 @@
 plugin:
   enabled: "<green>[CardsDP] 已启用，当前语言：<yellow><lang></yellow></green>"
   disabled: "<yellow>[CardsDP] 已停用</yellow>"
-  datapack_loaded: "<green>[CardsDP] 数据包逻辑已加载并映射为 Java 行为</green>"
-
-datapack:
-  missing_resource: "<yellow>缺少数据包资源：<red><path></red></yellow>"
-  parse_failed: "<red>解析数据包资源失败：<yellow><path></yellow>，原因：<gray><reason></gray></red>"
+  logic_loaded: "<green>[CardsDP] 插件原生逻辑已加载</green>"
 
 gameplay:
   slot_locked: "<red>该牌位当前已禁用</red>"

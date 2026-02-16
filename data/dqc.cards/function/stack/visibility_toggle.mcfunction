@@ -1,2 +1,0 @@
-execute if entity @s[nbt={item:{components:{"minecraft:custom_model_data":{flags:[false]}}}}] run return run data modify entity @s item.components."minecraft:custom_model_data".flags[0] set value true
-data modify entity @s item.components."minecraft:custom_model_data".flags[0] set value false

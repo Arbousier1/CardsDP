@@ -1,11 +1,7 @@
 plugin:
   enabled: "<green>[CardsDP] Enabled. Locale: <yellow><lang></yellow></green>"
   disabled: "<yellow>[CardsDP] Disabled</yellow>"
-  datapack_loaded: "<green>[CardsDP] Datapack behavior mapped to Java runtime</green>"
-
-datapack:
-  missing_resource: "<yellow>Missing datapack resource: <red><path></red></yellow>"
-  parse_failed: "<red>Failed to parse datapack resource: <yellow><path></yellow>, reason: <gray><reason></gray></red>"
+  logic_loaded: "<green>[CardsDP] Native plugin logic loaded</green>"
 
 gameplay:
   slot_locked: "<red>This stack slot is currently locked</red>"
