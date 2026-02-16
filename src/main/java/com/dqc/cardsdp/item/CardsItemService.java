@@ -367,7 +367,7 @@ public final class CardsItemService {
         recipe.setGroup("dqc.cards:deck");
         recipe.setCategory(CraftingBookCategory.MISC);
         recipe.setIngredient('P', Material.PAPER);
-        recipe.setIngredient('R', color.dyeMaterial());
+        recipe.setIngredient('R', Material.RED_DYE);
         recipe.setIngredient('B', color.dyeMaterial());
         recipe.setIngredient('C', Material.CYAN_DYE);
         Bukkit.addRecipe(recipe);
@@ -394,7 +394,7 @@ public final class CardsItemService {
         recipe.setGroup("dqc.cards:joker");
         recipe.setCategory(CraftingBookCategory.MISC);
         recipe.setIngredient('P', Material.PAPER);
-        recipe.setIngredient('R', color.dyeMaterial());
+        recipe.setIngredient('R', Material.RED_DYE);
         recipe.setIngredient('B', color.dyeMaterial());
         recipe.setIngredient('C', Material.CYAN_DYE);
         Bukkit.addRecipe(recipe);
