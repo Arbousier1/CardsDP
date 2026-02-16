@@ -397,10 +397,10 @@ public final class TableService {
             clone.setAmount(1);
             itemService.setCardFaceDown(clone, faceDown);
             stack.cards.add(clone);
+            playInsertQuiet(player);
         }
         player.getInventory().setItemInMainHand(new ItemStack(Material.AIR));
         updateStackDisplay(stack);
-        playInsert(player);
     }
 
     private void rightStandEmpty(Player player, StackState stack) {
@@ -500,7 +500,6 @@ public final class TableService {
         }
 
         if (stack.cards.isEmpty()) {
-            stack.locked = false;
             updateStackDisplay(stack);
             playInsert(player);
             return;
@@ -608,8 +607,7 @@ public final class TableService {
                     sanitizeCard(clone);
                     deckCards.add(clone);
                 }
-                int color = itemService.getItemColor(deckCards.get(0));
-                ItemStack deck = itemService.createDeck(deckCards, color);
+                ItemStack deck = itemService.createDeck(deckCards, 0);
                 stack.display.getWorld().dropItemNaturally(stack.display.getLocation().add(0, 0.125, 0), deck);
             }
             stack.display.remove();
@@ -703,6 +701,10 @@ public final class TableService {
 
     private void playInsert(Player player) {
         player.getWorld().playSound(player.getLocation(), Sound.ITEM_BUNDLE_INSERT, SoundCategory.PLAYERS, 1F, 1F);
+    }
+
+    private void playInsertQuiet(Player player) {
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_BUNDLE_INSERT, SoundCategory.PLAYERS, 0.1F, 1F);
     }
 
     private void playRemove(Player player) {

@@ -11,6 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -49,9 +50,7 @@ public final class DeckListener implements Listener {
         }
 
         if (!event.getPlayer().isSneaking()) {
-            if (action == Action.RIGHT_CLICK_AIR) {
-                event.setCancelled(true);
-            }
+            event.setUseItemInHand(Event.Result.DENY);
             return;
         }
         event.setCancelled(true);
