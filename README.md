@@ -44,6 +44,7 @@ For full visuals (custom card/table models), you still need the matching resourc
 
 - Chinese wiki home: `docs/wiki/Home.md`
 - Legacy entry page: `docs/WIKI.zh-CN.md`
+- mcfunction parity checklist: `docs/MCFUNCTION_PARITY_CHECKLIST.md`
 
 ## One-Click Wiki Publish
 

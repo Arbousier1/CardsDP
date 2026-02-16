@@ -1,5 +1,6 @@
 package com.dqc.cardsdp.table;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.dqc.cardsdp.i18n.I18nService;
 import com.dqc.cardsdp.item.CardsItemService;
 import java.util.ArrayList;
@@ -7,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -28,6 +27,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Transformation;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 public final class TableService {
     private final JavaPlugin plugin;
@@ -83,7 +85,7 @@ public final class TableService {
         int rotation = rotationFromYaw(player.getYaw());
         for (StackState stack : table.stacks) {
             if (stack.display.isValid()) {
-                stack.display.setRotation(rotation, 0F);
+                applyStackDisplayFacing(stack.display, rotation);
             }
         }
     }
@@ -101,16 +103,11 @@ public final class TableService {
             return;
         }
 
-        if (table.restoreTaskId != -1) {
-            Bukkit.getScheduler().cancelTask(table.restoreTaskId);
-        }
-        table.restoreTaskId = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            TableState active = tablesById.get(table.id);
-            if (active != null) {
-                active.health = 2;
-                active.restoreTaskId = -1;
+        Bukkit.getScheduler().runTaskLater(plugin, () -> {
+            for (TableState state : tablesById.values()) {
+                state.health = 2;
             }
-        }, 5L).getTaskId();
+        }, 5L);
     }
 
     public void handleTableBlockBreak(Block block, boolean dropItem) {
@@ -201,7 +198,7 @@ public final class TableService {
             Interaction.class,
             entity -> {
                 entity.setInteractionWidth(1.001F);
-                entity.setInteractionHeight(0.05F);
+                entity.setInteractionHeight(-0.826F);
                 entity.setResponsive(true);
                 entity.setInvulnerable(true);
             }
@@ -227,7 +224,7 @@ public final class TableService {
                     entity -> {
                         entity.setBillboard(Display.Billboard.FIXED);
                         entity.setInvulnerable(true);
-                        entity.setRotation(rotation, 0F);
+                        entity.setTransformation(createStackTransformation(rotation, 0.3F));
                         entity.setItemStack(itemService.createEmptySlotItem(false));
                     }
                 );
@@ -277,6 +274,51 @@ public final class TableService {
 
     private Color rgbColor(int rgb) {
         return Color.fromRGB((rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+    }
+
+    private Transformation createStackTransformation(int rotation, float depthScale) {
+        return new Transformation(
+            new Vector3f(0F, 0F, 0F),
+            new Quaternionf().rotateX((float) (-Math.PI / 2.0)),
+            new Vector3f(0.30F, 0.30F, depthScale),
+            rightRotationFor(rotation)
+        );
+    }
+
+    private Quaternionf rightRotationFor(int rotation) {
+        float radians = switch (rotation) {
+            case 180 -> (float) Math.PI;
+            case 90 -> (float) (Math.PI / 2.0);
+            case 0 -> 0F;
+            default -> (float) (Math.PI * 1.5);
+        };
+        return new Quaternionf().rotateZ(radians);
+    }
+
+    private void applyStackDisplayFacing(ItemDisplay display, int rotation) {
+        Transformation current = display.getTransformation();
+        display.setTransformation(
+            new Transformation(
+                new Vector3f(current.getTranslation()),
+                new Quaternionf(current.getLeftRotation()),
+                new Vector3f(current.getScale()),
+                rightRotationFor(rotation)
+            )
+        );
+    }
+
+    private void setStackDepth(ItemDisplay display, float depth) {
+        Transformation current = display.getTransformation();
+        Vector3f scale = new Vector3f(current.getScale());
+        scale.z = depth;
+        display.setTransformation(
+            new Transformation(
+                new Vector3f(current.getTranslation()),
+                new Quaternionf(current.getLeftRotation()),
+                scale,
+                new Quaternionf(current.getRightRotation())
+            )
+        );
     }
 
     private void placeSingleCard(Player player, StackState stack, boolean faceDown) {
@@ -452,39 +494,57 @@ public final class TableService {
     }
 
     private void setTopCardOwnerFromHead(Player player, StackState stack) {
-        if (stack.cards.isEmpty()) {
-            return;
-        }
         ItemStack head = player.getInventory().getItemInMainHand();
         if (head == null || head.getType() != Material.PLAYER_HEAD) {
             return;
         }
-        String owner = extractHeadOwner(head);
-        if (owner == null || owner.isBlank()) {
-            fail(player, "gameplay.head_owner_missing");
+
+        if (stack.cards.isEmpty()) {
+            stack.locked = false;
+            updateStackDisplay(stack);
+            playInsert(player);
             return;
         }
 
-        ItemStack top = stack.cards.get(stack.cards.size() - 1).clone();
-        itemService.setCardOwner(top, owner);
-        stack.cards.set(stack.cards.size() - 1, top);
+        String owner = extractHeadOwner(head);
+        PlayerProfile profile = extractHeadProfile(head);
+        if (owner != null && !owner.isBlank()) {
+            ItemStack top = stack.cards.get(stack.cards.size() - 1).clone();
+            itemService.setCardOwner(top, owner);
+            if (profile != null) {
+                itemService.setCardProfile(top, profile);
+            }
+            stack.cards.set(stack.cards.size() - 1, top);
+        }
         updateStackDisplay(stack);
         playInsert(player);
     }
 
+    private PlayerProfile extractHeadProfile(ItemStack head) {
+        ItemMeta meta = head.getItemMeta();
+        if (!(meta instanceof SkullMeta skullMeta)) {
+            return null;
+        }
+        PlayerProfile profile = skullMeta.getPlayerProfile();
+        if (profile != null) {
+            return profile;
+        }
+        if (skullMeta.getOwningPlayer() != null && skullMeta.getOwningPlayer().getName() != null) {
+            return Bukkit.createProfile(skullMeta.getOwningPlayer().getName());
+        }
+        return null;
+    }
+
     private String extractHeadOwner(ItemStack head) {
+        PlayerProfile profile = extractHeadProfile(head);
+        if (profile != null && profile.getName() != null && !profile.getName().isBlank()) {
+            return profile.getName();
+        }
         ItemMeta meta = head.getItemMeta();
         if (meta instanceof SkullMeta skullMeta && skullMeta.getOwningPlayer() != null) {
             return skullMeta.getOwningPlayer().getName();
         }
-        if (meta == null) {
-            return null;
-        }
-        Component displayName = meta.displayName();
-        if (displayName == null) {
-            return null;
-        }
-        return PlainTextComponentSerializer.plainText().serialize(displayName);
+        return null;
     }
 
     private void addCardToOffhand(Player player, ItemStack card) {
@@ -518,8 +578,10 @@ public final class TableService {
         }
         if (stack.cards.isEmpty()) {
             stack.display.setItemStack(itemService.createEmptySlotItem(stack.locked));
+            setStackDepth(stack.display, 0.30F);
         } else {
             stack.display.setItemStack(stack.cards.get(stack.cards.size() - 1).clone());
+            setStackDepth(stack.display, stack.cards.size() * 0.05F);
         }
 
         if (stack.interaction.isValid()) {
@@ -535,9 +597,6 @@ public final class TableService {
         TableState table = tablesById.remove(tableId);
         if (table == null) {
             return;
-        }
-        if (table.restoreTaskId != -1) {
-            Bukkit.getScheduler().cancelTask(table.restoreTaskId);
         }
 
         for (StackState stack : table.stacks) {
@@ -643,11 +702,11 @@ public final class TableService {
     }
 
     private void playInsert(Player player) {
-        player.playSound(player.getLocation(), Sound.ITEM_BUNDLE_INSERT, SoundCategory.PLAYERS, 1F, 1F);
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_BUNDLE_INSERT, SoundCategory.PLAYERS, 1F, 1F);
     }
 
     private void playRemove(Player player) {
-        player.playSound(player.getLocation(), Sound.ITEM_BUNDLE_REMOVE_ONE, SoundCategory.PLAYERS, 1F, 1F);
+        player.getWorld().playSound(player.getLocation(), Sound.ITEM_BUNDLE_REMOVE_ONE, SoundCategory.PLAYERS, 1F, 1F);
     }
 
     private void fail(Player player, String key) {
@@ -672,7 +731,6 @@ public final class TableService {
         private final ItemDisplay display;
         private final List<StackState> stacks = new ArrayList<>();
         private int health = 2;
-        private int restoreTaskId = -1;
 
         private TableState(UUID id, Block block, int color, Interaction interaction, ItemDisplay display) {
             this.id = id;

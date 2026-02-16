@@ -29,7 +29,7 @@ public final class CardsPlugin extends JavaPlugin {
         tableService.startMaintenanceTask();
 
         Bukkit.getPluginManager().registerEvents(new TableListener(tableService), this);
-        Bukkit.getPluginManager().registerEvents(new DeckListener(itemService), this);
+        Bukkit.getPluginManager().registerEvents(new DeckListener(this, itemService), this);
         Bukkit.getPluginManager().registerEvents(new JokerListener(itemService), this);
 
         i18n.info(getLogger(), "plugin.enabled", Placeholder.unparsed("lang", i18n.locale()));

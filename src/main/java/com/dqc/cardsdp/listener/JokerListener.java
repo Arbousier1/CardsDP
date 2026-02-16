@@ -44,7 +44,7 @@ public final class JokerListener implements Listener {
 
     private void spawnJoker(Player player, ItemStack card) {
         Location eye = player.getEyeLocation().clone();
-        Location drop = eye.add(player.getLocation().getDirection().normalize().multiply(0.25));
+        Location drop = eye.add(0, -0.25, 0).add(player.getLocation().getDirection().normalize().multiply(0.25));
         Item item = player.getWorld().dropItem(drop, card);
         item.setPickupDelay(0);
         item.setVelocity(new Vector(0, 0, 0));

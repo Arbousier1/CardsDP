@@ -1,10 +1,16 @@
 package com.dqc.cardsdp.item;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import com.dqc.cardsdp.definitions.CardColor;
 import com.dqc.cardsdp.definitions.CardDefinition;
 import com.dqc.cardsdp.definitions.CardsDefinitions;
 import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.BundleContents;
 import io.papermc.paper.datacomponent.item.Consumable;
+import io.papermc.paper.datacomponent.item.ItemContainerContents;
+import io.papermc.paper.datacomponent.item.ResolvableProfile;
+import io.papermc.paper.datacomponent.item.TooltipDisplay;
+import io.papermc.paper.datacomponent.item.UseCooldown;
 import io.papermc.paper.datacomponent.item.consumable.ItemUseAnimation;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +19,7 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
@@ -21,9 +28,11 @@ import org.bukkit.Tag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.BlockDataMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.CustomModelDataComponent;
+import org.bukkit.inventory.recipe.CraftingBookCategory;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -33,6 +42,7 @@ public final class CardsItemService {
     private static final byte FALSE = 0;
     private static final Color RED_CARD_TONE = Color.fromRGB(102, 0, 0);
     private static final Color BLACK_CARD_TONE = Color.fromRGB(26, 77, 77);
+    private static final float DATAPACK_DAMAGE_SCALE = 0.0185F;
 
     private final JavaPlugin plugin;
     private final CardsDefinitions definitions;
@@ -98,6 +108,7 @@ public final class CardsItemService {
         }
         card.setItemMeta(meta);
         stripCardConsumable(card);
+        applyOwnerProfileByName(card, definition.ownerName());
         return card;
     }
 
@@ -127,6 +138,15 @@ public final class CardsItemService {
             damageable.setDamage(resolveDeckDamage(cards.size()));
         }
         deck.setItemMeta(meta);
+        deck.setData(
+            DataComponentTypes.USE_COOLDOWN,
+            UseCooldown.useCooldown(0.01F).cooldownGroup(Key.key("dqc.cards:deck"))
+        );
+        deck.setData(DataComponentTypes.BUNDLE_CONTENTS, BundleContents.bundleContents(new ArrayList<>(cards)));
+        deck.setData(
+            DataComponentTypes.TOOLTIP_DISPLAY,
+            TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.DAMAGE)
+        );
         return deck;
     }
 
@@ -139,12 +159,23 @@ public final class CardsItemService {
         ItemStack table = new ItemStack(Material.SOUL_CAMPFIRE);
         ItemMeta meta = Objects.requireNonNull(table.getItemMeta());
         setItemName(meta, "Card Table");
+        if (meta instanceof BlockDataMeta blockDataMeta) {
+            blockDataMeta.setBlockData(Bukkit.createBlockData("minecraft:soul_campfire[lit=false,facing=south]"));
+        }
         setSingleColorModel(meta, color);
         applyItemModel(meta, "dqc.cards:table");
         PersistentDataContainer pdc = meta.getPersistentDataContainer();
         pdc.set(keyIsTable, PersistentDataType.BYTE, TRUE);
         pdc.set(keyColor, PersistentDataType.INTEGER, color);
         table.setItemMeta(meta);
+        table.setData(
+            DataComponentTypes.CONTAINER,
+            ItemContainerContents.containerContents(List.of(createLargeTableCarrier(color)))
+        );
+        table.setData(
+            DataComponentTypes.TOOLTIP_DISPLAY,
+            TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.CONTAINER)
+        );
         return table;
     }
 
@@ -157,7 +188,6 @@ public final class CardsItemService {
     public ItemStack createEmptySlotItem(boolean locked) {
         ItemStack empty = new ItemStack(Material.PAPER);
         ItemMeta meta = Objects.requireNonNull(empty.getItemMeta());
-        setItemName(meta, "Card Slot");
         setSlotModel(meta, locked);
         applyItemModel(meta, "dqc.cards:empty_slot");
         meta.getPersistentDataContainer().set(keySlotLocked, PersistentDataType.BYTE, locked ? TRUE : FALSE);
@@ -235,6 +265,23 @@ public final class CardsItemService {
         }
         setCardOwnerLore(meta, owner);
         card.setItemMeta(meta);
+        applyOwnerProfileByName(card, owner);
+    }
+
+    public void setCardProfile(ItemStack card, PlayerProfile profile) {
+        if (!isCard(card)) {
+            return;
+        }
+        if (profile == null || profile.getName() == null || profile.getName().isBlank()) {
+            card.unsetData(DataComponentTypes.PROFILE);
+            card.unsetData(DataComponentTypes.TOOLTIP_DISPLAY);
+            return;
+        }
+        card.setData(DataComponentTypes.PROFILE, ResolvableProfile.resolvableProfile(profile));
+        card.setData(
+            DataComponentTypes.TOOLTIP_DISPLAY,
+            TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.PROFILE)
+        );
     }
 
     public int getItemColor(ItemStack item) {
@@ -252,6 +299,16 @@ public final class CardsItemService {
     public List<ItemStack> getDeckCards(ItemStack deck) {
         if (!isDeck(deck)) {
             return new ArrayList<>();
+        }
+        if (deck.hasData(DataComponentTypes.BUNDLE_CONTENTS)) {
+            BundleContents bundleContents = deck.getData(DataComponentTypes.BUNDLE_CONTENTS);
+            if (bundleContents != null) {
+                List<ItemStack> out = new ArrayList<>(bundleContents.contents().size());
+                for (ItemStack card : bundleContents.contents()) {
+                    out.add(card.clone());
+                }
+                return out;
+            }
         }
         ItemMeta meta = deck.getItemMeta();
         if (meta == null) {
@@ -276,6 +333,7 @@ public final class CardsItemService {
             damageable.setDamage(resolveDeckDamage(cards.size()));
         }
         deck.setItemMeta(meta);
+        deck.setData(DataComponentTypes.BUNDLE_CONTENTS, BundleContents.bundleContents(new ArrayList<>(cards)));
     }
 
     public CardsDefinitions definitions() {
@@ -299,6 +357,8 @@ public final class CardsItemService {
         Bukkit.removeRecipe(recipeKey);
         ShapedRecipe recipe = new ShapedRecipe(recipeKey, createDeck(color.id()));
         recipe.shape("PPP", "RBC", "PPP");
+        recipe.setGroup("dqc.cards:deck");
+        recipe.setCategory(CraftingBookCategory.MISC);
         recipe.setIngredient('P', Material.PAPER);
         recipe.setIngredient('R', color.dyeMaterial());
         recipe.setIngredient('B', color.dyeMaterial());
@@ -311,6 +371,8 @@ public final class CardsItemService {
         Bukkit.removeRecipe(recipeKey);
         ShapedRecipe recipe = new ShapedRecipe(recipeKey, createTableItem(color.id()));
         recipe.shape("#", "c", "@");
+        recipe.setGroup("dqc.cards:table");
+        recipe.setCategory(CraftingBookCategory.MISC);
         recipe.setIngredient('#', Material.ITEM_FRAME);
         recipe.setIngredient('c', color.carpetMaterial());
         recipe.setIngredient('@', new RecipeChoice.MaterialChoice(Tag.PLANKS));
@@ -322,6 +384,8 @@ public final class CardsItemService {
         Bukkit.removeRecipe(recipeKey);
         ShapedRecipe recipe = new ShapedRecipe(recipeKey, createJokerBag(color.id(), 4));
         recipe.shape(" P ", "RBC", " P ");
+        recipe.setGroup("dqc.cards:joker");
+        recipe.setCategory(CraftingBookCategory.MISC);
         recipe.setIngredient('P', Material.PAPER);
         recipe.setIngredient('R', color.dyeMaterial());
         recipe.setIngredient('B', color.dyeMaterial());
@@ -372,11 +436,12 @@ public final class CardsItemService {
             meta.lore(null);
             return;
         }
-        meta.lore(List.of(Component.text(owner)));
+        meta.lore(List.of(Component.text(owner).decoration(TextDecoration.ITALIC, false)));
     }
 
     private int resolveDeckDamage(int cards) {
-        return Math.max(0, Math.min(cards, 54));
+        int damage = Math.round(cards * DATAPACK_DAMAGE_SCALE);
+        return Math.max(0, Math.min(damage, 54));
     }
 
     private Color rgbColor(int rgb) {
@@ -417,12 +482,34 @@ public final class CardsItemService {
                 .hasConsumeParticles(false)
                 .sound(Key.key("minecraft:item.bundle.drop_contents"))
         );
+        bag.setData(
+            DataComponentTypes.TOOLTIP_DISPLAY,
+            TooltipDisplay.tooltipDisplay().addHiddenComponents(DataComponentTypes.DAMAGE)
+        );
         return bag;
     }
 
     private void stripCardConsumable(ItemStack card) {
         card.unsetData(DataComponentTypes.FOOD);
         card.unsetData(DataComponentTypes.CONSUMABLE);
+    }
+
+    private void applyOwnerProfileByName(ItemStack card, String owner) {
+        if (owner == null || owner.isBlank()) {
+            card.unsetData(DataComponentTypes.PROFILE);
+            card.unsetData(DataComponentTypes.TOOLTIP_DISPLAY);
+            return;
+        }
+        setCardProfile(card, Bukkit.createProfile(owner));
+    }
+
+    private ItemStack createLargeTableCarrier(int color) {
+        ItemStack largeTable = new ItemStack(Material.STONE);
+        ItemMeta meta = Objects.requireNonNull(largeTable.getItemMeta());
+        applyItemModel(meta, "dqc.cards:large_table");
+        setSingleColorModel(meta, color);
+        largeTable.setItemMeta(meta);
+        return largeTable;
     }
 
     private NamespacedKey key(String value) {
