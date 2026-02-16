@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
@@ -43,6 +44,20 @@ public final class CardsItemService {
     private static final Color RED_CARD_TONE = Color.fromRGB(102, 0, 0);
     private static final Color BLACK_CARD_TONE = Color.fromRGB(26, 77, 77);
     private static final float DATAPACK_DAMAGE_SCALE = 0.0185F;
+    private static final Map<String, UUID> BUILTIN_OWNER_PROFILE_IDS = Map.ofEntries(
+        Map.entry("GoodTimesWithScar", UUID.fromString("cae9554c-31be-47e2-ba2b-4b8867adacc5")),
+        Map.entry("ZombieCleo", UUID.fromString("a3075fa7-ec13-49a2-aa47-6529e8b7daf2")),
+        Map.entry("Rendog", UUID.fromString("adcfbe76-42a7-43c2-ac93-50de07a4a3f0")),
+        Map.entry("BdoubleO100", UUID.fromString("7163fbce-39ac-4a02-b836-a991c45d2dd1")),
+        Map.entry("GeminiTay", UUID.fromString("5a1839d2-cecc-4c85-aa08-b346f9f772a1")),
+        Map.entry("Grian", UUID.fromString("5f8eb73b-25be-4c5a-a50f-d27d65e30ca0")),
+        Map.entry("MumboJumbo", UUID.fromString("c7da90d5-6a05-4217-b94a-7d427cbbcad8")),
+        Map.entry("PearlescentMoon", UUID.fromString("75c863ae-bb92-486d-911c-53030c552be0")),
+        Map.entry("EthosLab", UUID.fromString("4f41dcda-449a-46b7-8635-88979061fdd2")),
+        Map.entry("SmallishBeans", UUID.fromString("69b3107a-6d03-4122-b567-7652fcc3cdb2")),
+        Map.entry("FalseSymmetry", UUID.fromString("87d91548-6f18-491f-a267-7833caa5d7d8")),
+        Map.entry("Technoblade", UUID.fromString("b876ec32-e396-476b-a115-8438d83c67d4"))
+    );
 
     private final JavaPlugin plugin;
     private final CardsDefinitions definitions;
@@ -272,7 +287,7 @@ public final class CardsItemService {
         if (!isCard(card)) {
             return;
         }
-        if (profile == null || profile.getName() == null || profile.getName().isBlank()) {
+        if (profile == null || (profile.getId() == null && (profile.getName() == null || profile.getName().isBlank()))) {
             card.unsetData(DataComponentTypes.PROFILE);
             card.unsetData(DataComponentTypes.TOOLTIP_DISPLAY);
             return;
@@ -496,11 +511,33 @@ public final class CardsItemService {
 
     private void applyOwnerProfileByName(ItemStack card, String owner) {
         if (owner == null || owner.isBlank()) {
-            card.unsetData(DataComponentTypes.PROFILE);
-            card.unsetData(DataComponentTypes.TOOLTIP_DISPLAY);
+            setCardProfile(card, null);
             return;
         }
-        setCardProfile(card, Bukkit.createProfile(owner));
+        UUID fixedId = BUILTIN_OWNER_PROFILE_IDS.get(owner);
+        if (fixedId != null) {
+            setCardProfile(card, Bukkit.createProfile(fixedId));
+            return;
+        }
+        if (isValidProfileName(owner)) {
+            setCardProfile(card, Bukkit.createProfile(owner));
+            return;
+        }
+        setCardProfile(card, null);
+    }
+
+    private boolean isValidProfileName(String name) {
+        if (name == null || name.isBlank() || name.length() > 16) {
+            return false;
+        }
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_') {
+                continue;
+            }
+            return false;
+        }
+        return true;
     }
 
     private ItemStack createLargeTableCarrier(int color) {
